@@ -1,6 +1,6 @@
 #!/bin/bash
 
-xls_path="${XL_IDP_PATH_PRODUCTION_INDUSTRY}/production_industry/flat_production_industry"
+xls_path="${XL_IDP_PATH_PRODUCTION_INDUSTRY}/flat_production_industry"
 
 done_path="${xls_path}"/done
 if [ ! -d "$done_path" ]; then
