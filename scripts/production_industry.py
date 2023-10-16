@@ -94,7 +94,7 @@ class ProductionIndustry(object):
         df = df.dropna(axis=0, how='all')
         self.rename_columns(df)
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-        df["container_count"] = df["container_count"].astype(int)
+        df["container_count"] = df["container_count"].astype(int, errors="ignore")
         df["registration_date"] = df["registration_date"].apply(lambda x: self.convert_format_date(str(x)) if x else None)
         self.add_new_columns(df)
         df = df.replace({np.nan: None, "NaT": None})
