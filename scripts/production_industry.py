@@ -70,6 +70,18 @@ class ProductionIndustry(object):
                     dict_columns_eng[column] = HEADERS_ENG[columns]
         df.rename(columns=dict_columns_eng, inplace=True)
 
+    def change_type_and_values(self, df: DataFrame) -> None:
+        """
+        Change data types or changing values.
+        """
+        with contextlib.suppress(Exception):
+            df["container_count"] = df["container_count"].astype(int, errors="ignore")
+            df["registration_date"] = df["registration_date"].apply(
+                lambda x: self.convert_format_date(str(x)) if x else None
+            )
+            df["gross_weight_kg"] = df["gross_weight_kg"].astype(float, errors="ignore")
+            df["net_weight_kg"] = df["net_weight_kg"].astype(float, errors="ignore")
+
     def add_new_columns(self, df: DataFrame) -> None:
         """
         Add new columns.
@@ -90,12 +102,11 @@ class ProductionIndustry(object):
         """
         The main function where we read the Excel file and write the file to json.
         """
-        df: DataFrame = pd.read_excel(self.input_file_path)
+        df: DataFrame = pd.read_excel(self.input_file_path, dtype=str)
         df = df.dropna(axis=0, how='all')
         self.rename_columns(df)
         df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-        df["container_count"] = df["container_count"].astype(int, errors="ignore")
-        df["registration_date"] = df["registration_date"].apply(lambda x: self.convert_format_date(str(x)) if x else None)
+        self.change_type_and_values(df)
         self.add_new_columns(df)
         df = df.replace({np.nan: None, "NaT": None})
         self.write_to_json(df.to_dict('records'))
